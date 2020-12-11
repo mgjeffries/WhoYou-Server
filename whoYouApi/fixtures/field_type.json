@@ -1,0 +1,18 @@
+[
+    {
+        "model": "whoYouApi.fieldtype",
+        "pk": 1,
+        "fields": {
+            "name": "phone",
+            "isAddressRelated": false
+        }
+    },
+    {
+        "model": "whoYouApi.fieldtype",
+        "pk": 2,
+        "fields": {
+            "name": "email",
+            "isAddressRelated": false
+        }
+    }
+]

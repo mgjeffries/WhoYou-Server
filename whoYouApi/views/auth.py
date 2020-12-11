@@ -32,9 +32,7 @@ def login_user(request):
             whoyou_user = WhoYouUser.objects.get(user=authenticated_user)
             data = json.dumps(
                 {"valid": True,
-                "token": token.key,
-                "user_id": whoyou_user.id,
-                "is_admin": authenticated_user.is_staff })
+                "token": token.key })
             return HttpResponse(data, content_type='application/json')
 
 

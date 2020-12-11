@@ -58,6 +58,7 @@ def register_user(request):
     # on Django's built-in User model
     new_user = User.objects.create_user(
         email=req_body['email'],
+        username=req_body['email'],
         password=req_body['password']
     )
 

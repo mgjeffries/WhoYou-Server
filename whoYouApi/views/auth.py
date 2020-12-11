@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
-from whoYouApi.models import WhoYouUser
+from whoYouApi.models import WhoYouUser, Content, FieldType
 from django.utils import timezone
 
 
@@ -65,8 +65,43 @@ def register_user(request):
         user=new_user
     )
 
+    # Create a new content object containing the user's name
+    # This will allow the user to give permissions to view this content to other users
+    new_phone = Content.objects.create(
+        field_type = FieldType.objects.get(name="phone"),
+        value = req_body["name"],
+        owner = whoyou_user,
+        is_public = True,
+        verification_time = timezone.now()
+    )
+
+    # Create a new content object containing the user's phone number
+    # This will allow the user to give permissions to view this content to other users
+    new_name = Content.objects.create(
+        field_type = FieldType.objects.get(name="phone"),
+        value = req_body["phone"],
+        owner = whoyou_user,
+        is_public = False,
+        verification_time = timezone.now()
+    )
+
+    # Create a new content object containing the user's email
+    # This will allow the user to give permissions to view this content to other users
+    new_email = Content.objects.create(
+        field_type = FieldType.objects.get(name="email"),
+        value = req_body["email"],
+        owner=whoyou_user,
+        is_public=False,
+        verification_time = timezone.now()
+    )
+
     # Commit the user to the database by saving it
     whoyou_user.save()
+
+    # Commit the user's information to database in the content table
+    new_name.save()
+    new_phone.save()
+    new_email.save()
 
     # Use the REST Framework's token generator on the new user account
     token = Token.objects.create(user=new_user)

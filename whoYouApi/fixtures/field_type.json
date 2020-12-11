@@ -1,6 +1,6 @@
 [
     {
-        "model": "whoYouApi.fieldtype",
+        "model": "whoYouApi.FieldType",
         "pk": 1,
         "fields": {
             "name": "phone",
@@ -8,7 +8,7 @@
         }
     },
     {
-        "model": "whoYouApi.fieldtype",
+        "model": "whoYouApi.FieldType",
         "pk": 2,
         "fields": {
             "name": "email",

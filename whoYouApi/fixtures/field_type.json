@@ -14,5 +14,13 @@
             "name": "email",
             "isAddressRelated": false
         }
+    },
+    {
+        "model": "whoYouApi.FieldType",
+        "pk": 3,
+        "fields": {
+            "name": "name",
+            "isAddressRelated": false
+        }
     }
 ]

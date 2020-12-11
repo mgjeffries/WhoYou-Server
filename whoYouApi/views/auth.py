@@ -65,9 +65,19 @@ def register_user(request):
         user=new_user
     )
 
-    # Create a new content object containing the user's phone number
+    # Create a new content object containing the user's name
     # This will allow the user to give permissions to view this content to other users
     new_phone = Content.objects.create(
+        field_type = FieldType.objects.get(name="phone"),
+        value = req_body["name"],
+        owner = whoyou_user,
+        is_public = True,
+        verification_time = timezone.now()
+    )
+
+    # Create a new content object containing the user's phone number
+    # This will allow the user to give permissions to view this content to other users
+    new_name = Content.objects.create(
         field_type = FieldType.objects.get(name="phone"),
         value = req_body["phone"],
         owner = whoyou_user,
@@ -75,7 +85,7 @@ def register_user(request):
         verification_time = timezone.now()
     )
 
-    # Create a new content object containing the user's phone number
+    # Create a new content object containing the user's email
     # This will allow the user to give permissions to view this content to other users
     new_email = Content.objects.create(
         field_type = FieldType.objects.get(name="email"),
@@ -89,6 +99,7 @@ def register_user(request):
     whoyou_user.save()
 
     # Commit the user's information to database in the content table
+    new_name.save()
     new_phone.save()
     new_email.save()
 

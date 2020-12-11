@@ -70,7 +70,8 @@ def register_user(request):
     new_phone = Content.objects.create(
         field_type = FieldType.objects.get(name="phone"),
         value = req_body["phone"],
-        owner=whoyou_user,
+        owner = whoyou_user,
+        is_public = False,
         verification_time = timezone.now()
     )
 
@@ -80,6 +81,7 @@ def register_user(request):
         field_type = FieldType.objects.get(name="email"),
         value = req_body["email"],
         owner=whoyou_user,
+        is_public=False,
         verification_time = timezone.now()
     )
 

@@ -68,7 +68,7 @@ def register_user(request):
     # Create a new content object containing the user's name
     # This will allow the user to give permissions to view this content to other users
     new_phone = Content.objects.create(
-        field_type = FieldType.objects.get(name="phone"),
+        field_type = FieldType.objects.get(name="name"),
         value = req_body["name"],
         owner = whoyou_user,
         is_public = True,

@@ -1,0 +1,68 @@
+[
+    {
+        "model": "whoYouApi.Content",
+        "pk": 1,
+        "fields": {
+            "field_type": 3,
+            "value": "Neo",
+            "owner": 1,
+            "is_public": true,
+            "verification_time": "2020-12-14T23:18:18.028751Z"
+        }
+    },
+    {
+        "model": "whoYouApi.Content",
+        "pk": 2,
+        "fields": {
+            "field_type": 1,
+            "value": "1234567890",
+            "owner": 1,
+            "is_public": false,
+            "verification_time": "2020-12-14T23:18:18.032244Z"
+        }
+    },
+    {
+        "model": "whoYouApi.Content",
+        "pk": 3,
+        "fields": {
+            "field_type": 2,
+            "value": "neo@theResistance.com",
+            "owner": 1,
+            "is_public": false,
+            "verification_time": "2020-12-14T23:18:18.034957Z"
+        }
+    },
+    {
+        "model": "whoYouApi.Content",
+        "pk": 4,
+        "fields": {
+            "field_type": 3,
+            "value": "Agent Smith",
+            "owner": 2,
+            "is_public": true,
+            "verification_time": "2020-12-14T23:18:18.028751Z"
+        }
+    },
+    {
+        "model": "whoYouApi.Content",
+        "pk": 5,
+        "fields": {
+            "field_type": 1,
+            "value": "1234567890",
+            "owner": 2,
+            "is_public": false,
+            "verification_time": "2020-12-14T23:18:18.032244Z"
+        }
+    },
+    {
+        "model": "whoYouApi.Content",
+        "pk": 6,
+        "fields": {
+            "field_type": 2,
+            "value": "smith@theMatrix.com",
+            "owner": 2,
+            "is_public": false,
+            "verification_time": "2020-12-14T23:18:18.034957Z"
+        }
+    }
+]

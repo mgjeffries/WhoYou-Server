@@ -1,0 +1,38 @@
+[
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$216000$7a4WvJJj9lpO$IVuCKlGzsBHv2wFxuGmYj5MCpRiGFwx26eizhaQD6I0=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "neo@theResistance.com",
+            "first_name": "",
+            "last_name": "",
+            "email": "neo@theResistance.com",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2020-08-28T14:51:39.989Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$216000$EwmiIhVV0f0a$JUAX9c5Vv64yhKbJ0UQ97Sq17zYlh8X+FEYmaGDCoq4=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "smith@theMatrix.com",
+            "first_name": "",
+            "last_name": "",
+            "email": "smith@theMatrix.com",
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2020-08-28T14:51:39.989Z",
+            "groups": [],
+            "user_permissions": []
+        }
+    }
+]

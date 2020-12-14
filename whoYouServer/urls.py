@@ -1,11 +1,12 @@
 from django.conf.urls import include
 from django.urls import path
 from rest_framework import routers
-from whoYouApi.views import register_user, login_user
+from whoYouApi.views import register_user, login_user, ContentViewSet
 
 
 """Router"""
 router = routers.DefaultRouter(trailing_slash=False)
+router.register(r'content', ContentViewSet, 'content')
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -68,7 +68,7 @@ def register_user(request):
     # Create a new content object containing the user's name
     # This will allow the user to give permissions to view this content to other users
     new_phone = Content.objects.create(
-        field_type = FieldType.objects.get(name="phone"),
+        field_type = FieldType.objects.get(name="name"),
         value = req_body["name"],
         owner = whoyou_user,
         is_public = True,
@@ -108,5 +108,8 @@ def register_user(request):
 
     # Return the token, to the user so that they can authenticate.
     data = json.dumps(
-        {"token": token.key})
+        {
+            "token": token.key,
+            "id": whoyou_user.id
+        })
     return HttpResponse(data, content_type='application/json')

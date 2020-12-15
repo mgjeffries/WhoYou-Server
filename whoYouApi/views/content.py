@@ -43,26 +43,27 @@ class ContentViewSet(ViewSet):
         if user_id is not None:
             content_objects = content_objects.filter(owner=user_id)
         
-        serializer  = =ContentSerializer(
+        # Censor out values that the user shouldn't be able to access
+        censored_content_objects = []
+        for content_object in content_objects:
+            isRequesterContentOwner = WhoYouUser.objects.get(user=request.auth.user) == content_object.owner
+            if content_object.is_public or isRequesterContentOwner:
+                censored_content_objects.append(content_object)
+            #TODO: check if the requester has a valid view request for this content
+            else:
+                content_object.value = "restricted value"
+                censored_content_objects.append(content_object)
+
+        serializer = ContentSerializer(
             content_objects, many=True, context={'request': request}
         )
         return Response(serializer.data)
-        
+
+
 
 class ContentSerializer(serializers.ModelSerializer):
-    """Serializer for Content"""
-        # TODO: dynamically assign fields based on who is asking for the data, 
-        # whether the data is public, and whether the user has permissions to view the data
-        # def validateValuePermissions():
-            # If the content object is public:
-            # content_object.is_public
-            # OR the requester is the owner
-            # WhoYouUser.objects.get(user=request.auth.user) == content_object.owner
-            # OR the requester has a valid view request for this content
-            # TBD
-            # Then return the full content
-            # ELSE exclude the value from the response    class Meta:
+    """Serializer for Content"""     
+    class Meta:
         model = Content
         fields = ( 'id', 'field_type','value', 'owner', 'is_public', 'verification_time')
         depth = 1
-

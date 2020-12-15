@@ -47,7 +47,11 @@ class ContentViewSet(ViewSet):
         # Censor out values that the user shouldn't be able to access
         censored_content_objects = []
         for content_object in content_objects:
-            censored_content = censorContent(content_object, request.auth.user)
+            try: 
+                requester = WhoYouUser.objects.get(user=request.auth.user)
+            except AttributeError:
+                requester = None
+            censored_content = censorContent(content_object, requester)
             censored_content_objects.append(censored_content)
 
         serializer = ContentSerializer(
@@ -114,7 +118,7 @@ class ContentViewSet(ViewSet):
     
 
 def censorContent(content_object, requestingUser):
-    isRequesterContentOwner = WhoYouUser.objects.get(user=requestingUser) == content_object.owner
+    isRequesterContentOwner = requestingUser == content_object.owner
     if content_object.is_public or isRequesterContentOwner:
     #TODO: check if the requester has a valid view request for this content
         return content_object

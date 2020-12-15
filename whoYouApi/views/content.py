@@ -1,5 +1,5 @@
 """ View module for handling requests about content"""
-from whoYouApi.models import field_type
+from whoYouApi.models import content, field_type
 from whoYouApi.models.field_type import FieldType
 from rest_framework.viewsets import ViewSet
 from whoYouApi.models import WhoYouUser, Content
@@ -93,6 +93,25 @@ class ContentViewSet(ViewSet):
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
+    def destroy(self, request, pk=None):
+        """ Handle an DELETE request for content
+        Returns:
+            Response code
+        """
+        try:
+            content = Content.objects.get(pk=pk)
+
+            #Prevent non-admin users from deleting posts from other users
+            requesting_user = WhoYouUser.objects.get(user=request.auth.user)
+            if requesting_user == content.owner:
+                content.delete()
+                return Response({}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": "Permission denied"}, status=status.HTTP_401_UNAUTHORIZED)
+                
+        except Content.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+    
 
 def censorContent(content_object, requestingUser):
     isRequesterContentOwner = WhoYouUser.objects.get(user=requestingUser) == content_object.owner

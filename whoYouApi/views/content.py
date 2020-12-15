@@ -63,7 +63,7 @@ class ContentViewSet(ViewSet):
         """
         content = Content.objects.get(pk=pk)
         censoredContent = censorContent(content, request.auth.user)
-        serializer = ContentSerializer(content, context={'request': request})
+        serializer = ContentSerializer(censoredContent, context={'request': request})
         return Response(serializer.data)
         
     def update(self, request, pk=None):

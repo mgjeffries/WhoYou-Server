@@ -1,6 +1,7 @@
 import json
+from whoYouApi.models import field_type
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APIClient, APITestCase
 
 
 class ContentTests(APITestCase):
@@ -41,13 +42,32 @@ class ContentTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         for content in json_response:
-            if content.field_type.value == "name":
+            if content["field_type"]["name"] == "name":
                 self.assertEqual(content["value"], "Trinity")
-            if content.field_type.value == "phone":
+            if content["field_type"]["name"] == "phone":
                 self.assertEqual(content["value"], "restricted value")
-            if content.field_type.value == "email":
+            if content["field_type"]["name"] == "email":
                 self.assertEqual(content["value"], "restricted value")
     
+    def test_request_content_as_self(self):
+        """
+        Verify that the correct values are returned when user requests their own content
+        """
+        # Make sure request is authenticated
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        
+        url = f"/content?owner={self.newUserId}"
+        response = client.get(url, format='json')
+        json_response = json.loads(response.content)
 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for content in json_response:
+            if content["field_type"]["name"] == "name":
+                self.assertEqual(content["value"], "Trinity")
+            if content["field_type"]["name"] == "phone":
+                self.assertEqual(content["value"], "1234567890")
+            if content["field_type"]["name"] == "email":
+                self.assertEqual(content["value"], "trinity@theResistance.com")
         
 

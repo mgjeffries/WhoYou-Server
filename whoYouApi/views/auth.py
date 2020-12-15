@@ -108,5 +108,8 @@ def register_user(request):
 
     # Return the token, to the user so that they can authenticate.
     data = json.dumps(
-        {"token": token.key})
+        {
+            "token": token.key,
+            "id": whoyou_user.id
+        })
     return HttpResponse(data, content_type='application/json')

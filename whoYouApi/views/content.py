@@ -43,17 +43,22 @@ class ContentViewSet(ViewSet):
         if user_id is not None:
             content_objects = content_objects.filter(owner=user_id)
         
-        serializer  = ContentSerializer(
+        serializer  = PublicContentSerializer(
             content_objects, many=True, context={'request': request}
         )
         return Response(serializer.data)
         
 
-
-class ContentSerializer(serializers.ModelSerializer):
-    """Serializer for Content"""
-    # TODO: dynamically assign fields based on who is asking for the data, whether the data is public, and whether the user has permissions to view the data
+class PublicContentSerializer(serializers.ModelSerializer):
+    """Serializer for public Content"""
     class Meta:
         model = Content
-        fields = ( 'field_type', 'value', 'owner', 'is_public', 'verification_time')
+        fields = ( 'id', 'field_type', 'owner', 'is_public', 'verification_time')
         depth = 1
+class RestrictedContentSerializer(serializers.ModelSerializer):
+    """Serializer for public Content"""
+    class Meta:
+        model = Content
+        fields = ( 'id', 'field_type', 'value', 'owner', 'is_public', 'verification_time')
+        depth = 1
+

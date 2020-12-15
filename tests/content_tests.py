@@ -107,3 +107,7 @@ class ContentTests(APITestCase):
                 self.assertEqual(content["value"], "restricted value")
         
 
+# TODO Add tests for retrieving a specific piece of content by id
+# TODO Add tests for creating content (This should only be allowed by authenticated users)
+# TODO Add tests for updating content (This should only be allowed by the content owner)
+# TODO Add tests for deleting content (This should only be allowed by the content owner)

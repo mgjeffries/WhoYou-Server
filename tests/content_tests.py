@@ -6,9 +6,10 @@ from rest_framework.test import APITestCase
 class ContentTests(APITestCase):
     fixtures = ["field_type.json", "content.json", "tokens.json", "users.json", "whoyou_user.json"]
 
+
     def setUp(self):
         """
-        Create a new account and create sample category
+        Create a new account, which will also create sample categories
         """
         # create field types
 
@@ -19,40 +20,34 @@ class ContentTests(APITestCase):
             "password": "trinity",
             "phone": "1234567890"
         }
-        # Initiate request and capture response
         response = self.client.post(url, data, format='json')
-
-        # Parse the JSON in the response body
         json_response = json.loads(response.content)
 
-        # Store the auth token
+        # Store the auth token and user id for later use
         self.token = json_response["token"]
-        self.newUserId =json_response['id']
+        self.newUserId = json_response['id']
 
         # Assert that a user was created
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-    def test_request_content(self):
+    def test_request_content_as_unauthenticated(self):
         """
-        Verify that the correct values are returned when a user requests another user's content
+        Verify that the correct values are returned when an un-authenticated user requests a user's content
         """
-
-        # Authenticate as Agent Smith from the fixtures
-        # self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
-
-        url = f"/content?user={self.newUserId}"
-        # Initiate request and store response
+        url = f"/content?owner={self.newUserId}"
         response = self.client.get(url, format='json')
-
-        # Parse the JSON in the response body
         json_response = json.loads(response.content)
 
-        # Assert that the response code is correct
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for content in json_response:
+            if content.field_type.value == "name":
+                self.assertEqual(content["value"], "Trinity")
+            if content.field_type.value == "phone":
+                self.assertEqual(content["value"], "restricted value")
+            if content.field_type.value == "email":
+                self.assertEqual(content["value"], "restricted value")
+    
 
-        # Assert that the properties on the created resource are correct
-        self.assertEqual(json_response[0]["value"], "Trinity")
-        # self.assertEqual(json_response["maker"], "Milton Bradley")
-        # self.assertEqual(json_response["skill_level"], 5)
-        # self.assertEqual(json_response["number_of_players"], 6)
+        
+

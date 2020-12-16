@@ -28,7 +28,7 @@ class ContentViewRequestViewSet(ViewSet):
 
         content_view_request.save()
 
-        serializer = ContentSerializer(content_view_request, context={'request': request})
+        serializer = ContentViewRequestSerializer(content_view_request, context={'request': request})
         return Response(serializer.data)
 
 #     def list(self, request):
@@ -128,15 +128,17 @@ class ContentViewRequestViewSet(ViewSet):
 #         return content_object
 
 
-class ContentSerializer(serializers.ModelSerializer):
+class ContentSerializerNoValue(serializers.ModelSerializer):
     """ Serializer for Content that """
     class Meta:
         model = Content
+        # Content Value is NOT included to prevent exposing data
         fields = ('id',)
 
 class ContentViewRequestSerializer(serializers.ModelSerializer):
-    """Serializer for Content_View_Requests""" 
-    content = ContentSerializer
+    """Serializer for Content_View_Requests"""
+    # A custom serializer is used to prevent exposing the content value
+    content = ContentSerializerNoValue(many=False)
 
     class Meta:
         model = ContentViewRequest

@@ -7,6 +7,7 @@ from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models import Q    
 
 
 class ContentViewRequestViewSet(ViewSet):
@@ -43,8 +44,9 @@ class ContentViewRequestViewSet(ViewSet):
             Response -- JSON serialized list of content view requests
         """
         
-        requester = WhoYouUser.objects.get(user=request.auth.user)
-        filteredRequests = ContentViewRequest.objects.filter(content__owner=requester)
+        request_author = WhoYouUser.objects.get(user=request.auth.user)
+        filteredRequests = ContentViewRequest.objects.filter(Q(content__owner=request_author) | Q(requester=request_author))
+
         # TODO: also return requests that are authored by the requester
 
         serializer = ContentViewRequestSerializer(

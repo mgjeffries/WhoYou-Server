@@ -2,8 +2,6 @@ import json
 from whoYouApi.models import field_type
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
-
-
     
 class ContentViewRequestTests(APITestCase):
     fixtures = ["field_type.json"]    
@@ -11,7 +9,7 @@ class ContentViewRequestTests(APITestCase):
     
     def setUp(self):
         """
-        Create two new accounts, which will be used to verify that the right level of content is exposed
+        Create two new accounts
         """
         def createUser(userData):
             url = "/register"
@@ -43,18 +41,18 @@ class ContentViewRequestTests(APITestCase):
         smithResponse = createUser(agentSmithData)
         self.agentSmithId = smithResponse["id"]
         self.agentSmithToken = smithResponse["token"]
-        
+
 
     def test_view_request_for_content_no_value_returned(self):
         """
-        Verify that the correct values are returned when user requests their own content
+        Verify that the correct values are returned when user requests their access to another user's content
         """
         # Make sure request is authenticated
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
         
         data = {
-            "content": 2
+           "content": 2
         }
         url = "/contentViewRequest"
         response = client.post(url, data, format='json')
@@ -69,4 +67,27 @@ class ContentViewRequestTests(APITestCase):
         else:
             isValueInContent = False    
         self.assertEqual(isValueInContent, False)
+
         
+    def test_duplicate_request_for_content_expect_create_only_one(self): 
+        """
+        Verify that the correct values are returned when user requests their access to another user's content
+        """
+        # Make sure request is authenticated
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
+        
+        data = {
+           "content": 2
+        }
+        url = "/contentViewRequest"
+        # Create the first request to view content
+        response = client.post(url, data, format='json')
+        json_response = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Create the second request to view content
+        response = client.post(url, data, format='json')
+        json_response = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.assertEqual(json_response["reason"], "Request already exists")

@@ -36,34 +36,21 @@ class ContentViewRequestViewSet(ViewSet):
             serializer = ContentViewRequestSerializer(content_view_request, context={'request': request})
             return Response(serializer.data)
 
-    # def list(self, request):
-    #     """Handle GET requests to Content resource
+    def list(self, request):
+        """Handle GET requests to contentViewRequest resource
 
-    #     Returns:
-    #         Response -- JSON serialized list of Content
-    #     """
-    #     content_objects = Content.objects.all()
-
-    #     # Filter content based on query parameters
-    #     # e.g.: /content?owner=1
-    #     user_id = self.request.query_params.get('owner', None)
-    #     if user_id is not None:
-    #         content_objects = content_objects.filter(owner=user_id)
+        Returns:
+            Response -- JSON serialized list of content view requests
+        """
         
-    #     # Censor out values that the user shouldn't be able to access
-    #     censored_content_objects = []
-    #     for content_object in content_objects:
-    #         try: 
-    #             requester = WhoYouUser.objects.get(user=request.auth.user)
-    #         except AttributeError:
-    #             requester = None
-    #         censored_content = censorContent(content_object, requester)
-    #         censored_content_objects.append(censored_content)
+        requester = WhoYouUser.objects.get(user=request.auth.user)
+        filteredRequests = ContentViewRequest.objects.filter(content__owner=requester)
+        # TODO: also return requests that are authored by the requester
 
-    #     serializer = ContentSerializer(
-    #         censored_content_objects, many=True, context={'request': request}
-    #     )
-    #     return Response(serializer.data)
+        serializer = ContentViewRequestSerializer(
+            filteredRequests, many=True, context={'request': request}
+        )
+        return Response(serializer.data)
 
 
 #     def retrieve(self, request, pk=None):

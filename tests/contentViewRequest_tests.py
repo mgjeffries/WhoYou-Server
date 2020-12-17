@@ -129,9 +129,10 @@ class ContentViewRequestTests(APITestCase):
         self.assertEqual(is_trinity_content_request_in_response, True)
         self.assertEqual(len(json_response), 2)
     
-    def test_approve_own_content_request_expect_error(self):
+    def test_approve_own_request_expect_error(self):
         """
-        Only content owners should be able to approve a content request
+        Test that a user can NOT approve a content view request for content that 
+        they do NOT own
         """
         client = APIClient()
         url = F"/contentViewRequest/{self.agentSmithRequestForTrinityInfo}"
@@ -140,8 +141,24 @@ class ContentViewRequestTests(APITestCase):
         data = {
            "is_approved": True
         }
-        response = client.patch(url, format='json')
+        response = client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    
+    
+    def test_approve_request_for_own_content_expect_success(self):
+        """
+        Test that a user CAN approve a content view request for content that 
+        they DO own
+        """
+        client = APIClient()
+        url = F"/contentViewRequest/{self.agentSmithRequestForTrinityInfo}"
+        # Get Trinity's content requests
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.trinityToken)
+        data = {
+           "is_approved": True
+        }
+        response = client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
 
 
@@ -149,9 +166,6 @@ class ContentViewRequestTests(APITestCase):
         # Users should only be able to get requests that they created, 
         # or that are addressed to their content
 
-        # TODO: Add tests for updating a content view request. 
-        # Users should only be able to update requests to 
-        # content that they own
 
         # TODO: Add tests for deleting a content view request.
         # Users should only be able to delete a content view request

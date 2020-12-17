@@ -45,7 +45,7 @@ class ContentTests(APITestCase):
         self.agentSmithToken = smithResponse["token"]
         
 
-    def test_request_content_as_unauthenticated(self):
+    def test_get_content_as_unauthenticated_expect_restriced_unless_public(self):
         """
         Verify that the correct values are returned when an un-authenticated user GETs a user's content
         """
@@ -63,7 +63,7 @@ class ContentTests(APITestCase):
                 self.assertEqual(content["value"], "restricted value")
     
 
-    def test_request_content_as_self(self):
+    def test_get_content_as_owner_expect_unrestricted(self):
         """
         Verify that the correct values are returned when user GETs their own content
         """
@@ -85,7 +85,7 @@ class ContentTests(APITestCase):
                 self.assertEqual(content["value"], "trinity@theResistance.com")
 
 
-    def test_request_content_as_other(self):
+    def test_get_content_as_other_expect_restriced_unless_public(self):
         """
         Verify that the correct values are returned when user GETs another user's content
         """
@@ -105,6 +105,13 @@ class ContentTests(APITestCase):
                 self.assertEqual(content["value"], "restricted value")
             if content["field_type"]["name"] == "email":
                 self.assertEqual(content["value"], "restricted value")
+
+    def test_get_content_as_approved_other_expect_unrestricted(self):
+        """
+        When a user has an approved content_view_request, they should 
+        be able to access content that isn't public
+        """
+        
         
 
 # TODO Add tests for retrieving a specific piece of content by id

@@ -54,10 +54,10 @@ class WhoYouUserViewSet(ViewSet):
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-
 class WhoYouUserSerializer(serializers.ModelSerializer):
-    """Serializer for WhoYouUsers"""     
+    """Serializer for WhoYouUsers""" 
+
     class Meta:
         model = WhoYouUser
-        fields = ( 'id', 'profile_image_path', 'cover_image_path')
+        fields = ( 'id', 'profile_image_path', 'cover_image_path', 'name')
         depth = 1

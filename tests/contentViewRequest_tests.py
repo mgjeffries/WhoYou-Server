@@ -13,13 +13,9 @@ class ContentViewRequestTests(APITestCase):
         """
         def createUser(userData):
             url = "/register"
-            
             response = self.client.post(url, userData, format='json')
             json_response = json.loads(response.content)
-
-            # Assert that a user was created
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-
             return json_response
 
         trinityData = {
@@ -34,6 +30,7 @@ class ContentViewRequestTests(APITestCase):
             "password": "smith",
             "phone": "1234567890"
         }
+        
         trinityResponse = createUser(trinityData)
         self.trinityId = trinityResponse["id"]
         self.trinityToken = trinityResponse["token"]
@@ -43,6 +40,15 @@ class ContentViewRequestTests(APITestCase):
         self.agentSmithToken = smithResponse["token"]
 
 
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
+        data = {
+           "content": 2
+        }
+        url = "/contentViewRequest"
+        response = client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_view_request_for_content_no_value_returned(self):
         """
         Verify that the correct values are returned when user requests their access to another user's content
@@ -50,23 +56,18 @@ class ContentViewRequestTests(APITestCase):
         # Make sure request is authenticated
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
-        
-        data = {
-           "content": 2
-        }
         url = "/contentViewRequest"
-        response = client.post(url, data, format='json')
+        response = client.get(url, format='json')
         json_response = json.loads(response.content)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json_response["is_approved"], False)
-
         # Make sure that the value from the content was NOT returned with the contentViewRequest
-        if "value" in json_response['content']:
-            isValueInContent = True
-        else:
-            isValueInContent = False    
-        self.assertEqual(isValueInContent, False)
+        for viewRequest in json_response:
+            if "value" in viewRequest['content']:
+                isValueInContent = True
+            else:
+                isValueInContent = False    
+            self.assertEqual(viewRequest["is_approved"], False)
+            self.assertEqual(isValueInContent, False)
 
         
     def test_duplicate_request_for_content_expect_create_only_one(self): 
@@ -78,7 +79,7 @@ class ContentViewRequestTests(APITestCase):
         client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
         
         data = {
-           "content": 2
+           "content": 5
         }
         url = "/contentViewRequest"
         # Create the first request to view content
@@ -98,15 +99,8 @@ class ContentViewRequestTests(APITestCase):
         Verify that the correct values are returned when user gets content requests
         """
         client = APIClient()
-
-        # Create a content View Request as Agent Smith
-        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
-        data = {
-           "content": 2
-        }
         url = "/contentViewRequest"
-        response = client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
         # Change authentication to trinity 
         client.credentials(HTTP_AUTHORIZATION='Token ' + self.trinityToken)
@@ -123,7 +117,6 @@ class ContentViewRequestTests(APITestCase):
         data = {
            "content": 6
         }
-        url = "/contentViewRequest"
         response = client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

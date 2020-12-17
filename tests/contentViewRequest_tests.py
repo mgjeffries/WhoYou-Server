@@ -20,13 +20,13 @@ class ContentViewRequestTests(APITestCase):
 
         trinityData = {
             "name": "Trinity",
-            "email": "trinity@theResistance.com",
+            "email": "trinity@theMatrix.com",
             "password": "trinity",
             "phone": "1234567890"
         }
         agentSmithData = {
             "name": "Agent Smith",
-            "email": "smith@test.com",
+            "email": "smith@theMatrix.com",
             "password": "smith",
             "phone": "1234567890"
         }
@@ -42,10 +42,20 @@ class ContentViewRequestTests(APITestCase):
 
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
+        # Post a request to view trinity's content as smith
         data = {
            "content": 2
         }
         url = "/contentViewRequest"
+        response = client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Change authentication to trinity 
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.trinityToken)
+        # Post a request to view smith's content as trinity
+        data = {
+           "content": 6
+        }
         response = client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -85,12 +95,14 @@ class ContentViewRequestTests(APITestCase):
         # Create the first request to view content
         response = client.post(url, data, format='json')
         json_response = json.loads(response.content)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
         # Create the second request to view content
         response = client.post(url, data, format='json')
         json_response = json.loads(response.content)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(json_response["reason"], "Request already exists")
 
 
@@ -100,31 +112,16 @@ class ContentViewRequestTests(APITestCase):
         """
         client = APIClient()
         url = "/contentViewRequest"
-
-
-        # Change authentication to trinity 
-        client.credentials(HTTP_AUTHORIZATION='Token ' + self.trinityToken)
-
         # Get Trinity's content requests
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.trinityToken)
         response = client.get(url, format='json')
         json_response = json.loads(response.content)
+
+        is_smith_content_request_in_response = any( elm["requester"]["id"] == self.agentSmithId for elm in json_response)
+        is_trinity_content_request_in_response = any( elm["requester"]["id"] == self.trinityId for elm in json_response)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        is_smith_content_request_in_response = any( elm["content"]["id"] == 2 for elm in json_response)
         self.assertEqual(is_smith_content_request_in_response, True)
-        self.assertEqual(len(json_response), 1)
-
-        # Post a request to view another user's content as trinity
-        data = {
-           "content": 6
-        }
-        response = client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Get content view requests as trinity again
-        response = client.get(url, format='json')
-        json_response = json.loads(response.content)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        is_trinity_content_request_in_response = any( elm["content"]["id"] == 6 for elm in json_response)
         self.assertEqual(is_trinity_content_request_in_response, True)
         self.assertEqual(len(json_response), 2)
 

@@ -106,6 +106,30 @@ class ContentTests(APITestCase):
             if content["field_type"]["name"] == "email":
                 self.assertEqual(content["value"], "restricted value")
 
+    def test_get_content_as_unapproved_other_expect_restricted(self):
+        """
+        When a user has an UNapproved content_view_request, they should NOT
+        be able to access content that isn't public
+        """
+        client = APIClient()
+
+        # Post a request to view trinity's content as smith
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
+        data = {
+           "content": 2
+        }
+        url = "/contentViewRequest"
+        response = client.post(url, data, format='json')
+        json_response = json.loads(response.content)
+        self.agentSmithRequestForTrinityInfo = json_response["id"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        url = "/content/2"
+        response = client.get(url, format='json')
+        json_response = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json_response["value"], "restricted value")
+
     def test_get_content_as_approved_other_expect_unrestricted(self):
         """
         When a user has an approved content_view_request, they should 
@@ -138,8 +162,6 @@ class ContentTests(APITestCase):
         json_response = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json_response["value"], "1234567890")
-
-
 
         
 

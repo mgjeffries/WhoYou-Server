@@ -66,32 +66,25 @@ class ContentViewRequestViewSet(ViewSet):
         else:
             return Response({"message": "Permission denied"}, status=status.HTTP_401_UNAUTHORIZED)
         
-#     def update(self, request, pk=None):
-#         """ Handle an PUT request for content
-#         Returns:
-#             Response code
-#         """
+    def partial_update(self, request, pk=None):
+        """ Handle an PATCH request for single contentViewRequest
+        Returns:
+            Response code
+        """
 
-#         # Find the post being updated based on it's primary key
-#         content = Content.objects.get(pk=pk)
+        # Find the post being updated based on it's primary key
+        contentViewRequest = ContentViewRequest.objects.get(pk=pk)
 
-#         #Prevent non-admin users from modifying other user's posts
-#         requester = WhoYouUser.objects.get(user=request.auth.user)
-#         if requester != content.owner:
-#             return Response({"message": "Permission denied"}, status=status.HTTP_401_UNAUTHORIZED)
+        #Prevent non-admin users from modifying other user's posts
+        requester = WhoYouUser.objects.get(user=request.auth.user)
+        if requester != contentViewRequest.content.owner:
+            return Response({"message": "Permission denied"}, status=status.HTTP_401_UNAUTHORIZED)
 
-#         # save basic (non-associated) properties
-#         content.owner = requester
-#         field_type = FieldType.objects.get(pk=request.data["field_type"])
-#         content.field_type = field_type
-#         content.value = request.data["value"]
-#         content.is_public = request.data["is_public"] == "true"
-#         content.verification_time = timezone.now()
+        contentViewRequest.is_approved = request.data["is_approved"]
 
-#         # save content object
-#         content.save()
+        contentViewRequest.save()
 
-#         return Response({}, status=status.HTTP_204_NO_CONTENT)
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 #     def destroy(self, request, pk=None):
 #         """ Handle an DELETE request for content

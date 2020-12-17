@@ -138,3 +138,11 @@ class ContentViewRequestTests(APITestCase):
         # TODO: Add tests for getting single content view request. 
         # Users should only be able to get requests that they created, 
         # or that are addressed to their content
+
+        # TODO: Add tests for updating a content view request. 
+        # Users should only be able to update requests to 
+        # content that they own
+
+        # TODO: Add tests for deleting a content view request.
+        # Users should only be able to delete a content view request
+        # that they created

@@ -71,11 +71,8 @@ class ContentViewRequestViewSet(ViewSet):
         Returns:
             Response code
         """
-
-        # Find the post being updated based on it's primary key
         contentViewRequest = ContentViewRequest.objects.get(pk=pk)
 
-        #Prevent non-admin users from modifying other user's posts
         requester = WhoYouUser.objects.get(user=request.auth.user)
         if requester != contentViewRequest.content.owner:
             return Response({"message": "Permission denied"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -86,36 +83,25 @@ class ContentViewRequestViewSet(ViewSet):
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-#     def destroy(self, request, pk=None):
-#         """ Handle an DELETE request for content
-#         Returns:
-#             Response code
-#         """
-#         try:
-#             content = Content.objects.get(pk=pk)
+    def destroy(self, request, pk=None):
+        """ Handle an DELETE request for single contentViewRequest
+        Returns:
+            Response code
+        """
+        try:
+            contentViewRequest = ContentViewRequest.objects.get(pk=pk)
 
-#             #Prevent non-admin users from deleting posts from other users
-#             requesting_user = WhoYouUser.objects.get(user=request.auth.user)
-#             if requesting_user == content.owner:
-#                 content.delete()
-#                 return Response({}, status=status.HTTP_204_NO_CONTENT)
-#             else:
-#                 return Response({"message": "Permission denied"}, status=status.HTTP_401_UNAUTHORIZED)
+
+            #Prevent users from deleting posts from other users
+            requesting_user = WhoYouUser.objects.get(user=request.auth.user)
+            if requesting_user == contentViewRequest.requester:
+                contentViewRequest.delete()
+                return Response({}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": "Permission denied"}, status=status.HTTP_401_UNAUTHORIZED)
                 
-#         except Content.DoesNotExist as ex:
-#             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
-    
-
-# def censorContent(content_object, requestingUser):
-#     isRequesterContentOwner = requestingUser == content_object.owner
-#     if content_object.is_public or isRequesterContentOwner:
-#     #TODO: check if the requester has a valid view request for this content
-#         return content_object
-#     else:
-#         content_object.value = "restricted value"
-#         return content_object
-
-
+        except contentViewRequest.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 class ContentSerializerNoValue(serializers.ModelSerializer):
     """ Serializer for Content that """
     class Meta:

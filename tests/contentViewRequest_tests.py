@@ -48,6 +48,8 @@ class ContentViewRequestTests(APITestCase):
         }
         url = "/contentViewRequest"
         response = client.post(url, data, format='json')
+        json_response = json.loads(response.content)
+        self.agentSmithRequestForTrinityInfo = json_response["id"]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Change authentication to trinity 
@@ -57,6 +59,8 @@ class ContentViewRequestTests(APITestCase):
            "content": 6
         }
         response = client.post(url, data, format='json')
+        json_response = json.loads(response.content)
+        self.trinityRequestForSmithInfo = json_response["id"]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_view_request_for_content_no_value_returned(self):
@@ -124,6 +128,22 @@ class ContentViewRequestTests(APITestCase):
         self.assertEqual(is_smith_content_request_in_response, True)
         self.assertEqual(is_trinity_content_request_in_response, True)
         self.assertEqual(len(json_response), 2)
+    
+    def test_approve_own_content_request_expect_error(self):
+        """
+        Only content owners should be able to approve a content request
+        """
+        client = APIClient()
+        url = F"/contentViewRequest/{self.agentSmithRequestForTrinityInfo}"
+        # Get Trinity's content requests
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
+        data = {
+           "is_approved": True
+        }
+        response = client.patch(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
 
         # TODO: Add tests for getting single content view request. 
         # Users should only be able to get requests that they created, 

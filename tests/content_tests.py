@@ -43,6 +43,19 @@ class ContentTests(APITestCase):
         smithResponse = createUser(agentSmithData)
         self.agentSmithId = smithResponse["id"]
         self.agentSmithToken = smithResponse["token"]
+
+        # Post a request to view trinity's content as smith
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
+        data = {
+           "content": 2
+        }
+        url = "/contentViewRequest"
+        response = client.post(url, data, format='json')
+        json_response = json.loads(response.content)
+        self.agentSmithRequestForTrinityInfo = json_response["id"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json_response["is_approved"], False)
         
 
     def test_get_content_as_unauthenticated_expect_restriced_unless_public(self):
@@ -112,18 +125,7 @@ class ContentTests(APITestCase):
         be able to access content that isn't public
         """
         client = APIClient()
-
-        # Post a request to view trinity's content as smith
         client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
-        data = {
-           "content": 2
-        }
-        url = "/contentViewRequest"
-        response = client.post(url, data, format='json')
-        json_response = json.loads(response.content)
-        self.agentSmithRequestForTrinityInfo = json_response["id"]
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         url = "/content/2"
         response = client.get(url, format='json')
         json_response = json.loads(response.content)
@@ -136,19 +138,7 @@ class ContentTests(APITestCase):
         be able to access content that isn't public
         """
         client = APIClient()
-
-        # Post a request to view trinity's content as smith
-        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
-        data = {
-           "content": 2
-        }
-        url = "/contentViewRequest"
-        response = client.post(url, data, format='json')
-        json_response = json.loads(response.content)
-        self.agentSmithRequestForTrinityInfo = json_response["id"]
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Approve smith's request as trinity
+        # Approve smith's request to view trinity's content
         url = F"/contentViewRequest/{self.agentSmithRequestForTrinityInfo}"
         client.credentials(HTTP_AUTHORIZATION='Token ' + self.trinityToken)
         data = {
@@ -157,6 +147,8 @@ class ContentTests(APITestCase):
         response = client.patch(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+        # authenticate as smith, and read the phone number MUAHH HA HA!
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
         url = "/content/2"
         response = client.get(url, format='json')
         json_response = json.loads(response.content)

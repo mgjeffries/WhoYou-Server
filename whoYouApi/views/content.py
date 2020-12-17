@@ -76,15 +76,12 @@ class ContentViewSet(ViewSet):
             Response code
         """
 
-        # Find the post being updated based on it's primary key
         content = Content.objects.get(pk=pk)
 
-        #Prevent non-admin users from modifying other user's posts
         requester = WhoYouUser.objects.get(user=request.auth.user)
         if requester != content.owner:
             return Response({"message": "Permission denied"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # save basic (non-associated) properties
         content.owner = requester
         field_type = FieldType.objects.get(pk=request.data["field_type"])
         content.field_type = field_type
@@ -92,7 +89,6 @@ class ContentViewSet(ViewSet):
         content.is_public = request.data["is_public"] == "true"
         content.verification_time = timezone.now()
 
-        # save content object
         content.save()
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
@@ -105,7 +101,6 @@ class ContentViewSet(ViewSet):
         try:
             content = Content.objects.get(pk=pk)
 
-            #Prevent non-admin users from deleting posts from other users
             requesting_user = WhoYouUser.objects.get(user=request.auth.user)
             if requesting_user == content.owner:
                 content.delete()

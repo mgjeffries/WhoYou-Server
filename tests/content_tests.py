@@ -47,7 +47,7 @@ class ContentTests(APITestCase):
 
     def test_request_content_as_unauthenticated(self):
         """
-        Verify that the correct values are returned when an un-authenticated user requests a user's content
+        Verify that the correct values are returned when an un-authenticated user GETs a user's content
         """
         url = f"/content?owner={self.trinityId}"
         response = self.client.get(url, format='json')
@@ -65,7 +65,7 @@ class ContentTests(APITestCase):
 
     def test_request_content_as_self(self):
         """
-        Verify that the correct values are returned when user requests their own content
+        Verify that the correct values are returned when user GETs their own content
         """
         # Make sure request is authenticated
         client = APIClient()
@@ -87,7 +87,7 @@ class ContentTests(APITestCase):
 
     def test_request_content_as_other(self):
         """
-        Verify that the correct values are returned when user requests their own content
+        Verify that the correct values are returned when user GETs another user's content
         """
         # Make sure request is authenticated
         client = APIClient()

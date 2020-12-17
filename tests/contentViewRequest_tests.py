@@ -134,3 +134,7 @@ class ContentViewRequestTests(APITestCase):
         is_trinity_content_request_in_response = any( elm["content"]["id"] == 6 for elm in json_response)
         self.assertEqual(is_trinity_content_request_in_response, True)
         self.assertEqual(len(json_response), 2)
+
+        # TODO: Add tests for getting single content view request. 
+        # Users should only be able to get requests that they created, 
+        # or that are addressed to their content

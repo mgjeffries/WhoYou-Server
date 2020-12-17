@@ -47,23 +47,24 @@ class ContentViewRequestViewSet(ViewSet):
         request_author = WhoYouUser.objects.get(user=request.auth.user)
         filteredRequests = ContentViewRequest.objects.filter(Q(content__owner=request_author) | Q(requester=request_author))
 
-        # TODO: also return requests that are authored by the requester
-
         serializer = ContentViewRequestSerializer(
             filteredRequests, many=True, context={'request': request}
         )
         return Response(serializer.data)
 
 
-#     def retrieve(self, request, pk=None):
-#         """Handle GET request for single content instance
-#         Returns:
-#             Response JSON serialized content instance
-#         """
-#         content = Content.objects.get(pk=pk)
-#         censoredContent = censorContent(content, request.auth.user)
-#         serializer = ContentSerializer(censoredContent, context={'request': request})
-#         return Response(serializer.data)
+    def retrieve(self, request, pk=None):
+        """Handle GET request for single contentViewRequest instance
+        Returns:
+            Response JSON serialized contentViewRequest instance
+        """
+        requester = WhoYouUser.objects.get(user=request.auth.user)
+        contentViewRequest = ContentViewRequest.objects.get(pk=pk)
+        if requester == contentViewRequest.requester or requester == contentViewRequest.content.owner:    
+            serializer = ContentViewRequestSerializer(contentViewRequest, context={'request': request})
+            return Response(serializer.data)
+        else:
+            return Response({"message": "Permission denied"}, status=status.HTTP_401_UNAUTHORIZED)
         
 #     def update(self, request, pk=None):
 #         """ Handle an PUT request for content

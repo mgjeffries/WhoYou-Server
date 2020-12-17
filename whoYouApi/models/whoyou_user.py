@@ -7,8 +7,3 @@ class WhoYouUser(models.Model):
     profile_image_path = models.CharField(max_length=100)
     cover_image_path = models.CharField(max_length=100)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=100)
-
-    @property
-    def email(self):
-        return f"{self.user.email}"

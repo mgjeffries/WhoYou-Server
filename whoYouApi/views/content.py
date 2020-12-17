@@ -1,8 +1,7 @@
 """ View module for handling requests about content"""
-from whoYouApi.models import content, field_type
 from whoYouApi.models.field_type import FieldType
 from rest_framework.viewsets import ViewSet
-from whoYouApi.models import WhoYouUser, Content
+from whoYouApi.models import WhoYouUser, Content, ContentViewRequest
 from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.response import Response
@@ -66,7 +65,8 @@ class ContentViewSet(ViewSet):
             Response JSON serialized content instance
         """
         content = Content.objects.get(pk=pk)
-        censoredContent = censorContent(content, request.auth.user)
+        requester = WhoYouUser.objects.get(user=request.auth.user)
+        censoredContent = censorContent(content, requester)
         serializer = ContentSerializer(censoredContent, context={'request': request})
         return Response(serializer.data)
         
@@ -114,8 +114,13 @@ class ContentViewSet(ViewSet):
 
 def censorContent(content_object, requestingUser):
     isRequesterContentOwner = requestingUser == content_object.owner
-    if content_object.is_public or isRequesterContentOwner:
-    #TODO: check if the requester has a valid view request for this content
+    isRequesterApprovedToView = False
+    try:
+        matchingViewRequest = ContentViewRequest.objects.get(content=content_object, requester=requestingUser)
+        isRequesterApprovedToView = matchingViewRequest.is_approved
+    except ContentViewRequest.DoesNotExist:
+        pass
+    if content_object.is_public or isRequesterContentOwner or isRequesterApprovedToView:
         return content_object
     else:
         content_object.value = "restricted value"

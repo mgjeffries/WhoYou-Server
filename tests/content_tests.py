@@ -43,9 +43,22 @@ class ContentTests(APITestCase):
         smithResponse = createUser(agentSmithData)
         self.agentSmithId = smithResponse["id"]
         self.agentSmithToken = smithResponse["token"]
+
+        # Post a request to view trinity's content as smith
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
+        data = {
+           "content": 2
+        }
+        url = "/contentViewRequest"
+        response = client.post(url, data, format='json')
+        json_response = json.loads(response.content)
+        self.agentSmithRequestForTrinityInfo = json_response["id"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json_response["is_approved"], False)
         
 
-    def test_request_content_as_unauthenticated(self):
+    def test_get_content_as_unauthenticated_expect_restriced_unless_public(self):
         """
         Verify that the correct values are returned when an un-authenticated user GETs a user's content
         """
@@ -63,7 +76,7 @@ class ContentTests(APITestCase):
                 self.assertEqual(content["value"], "restricted value")
     
 
-    def test_request_content_as_self(self):
+    def test_get_content_as_owner_expect_unrestricted(self):
         """
         Verify that the correct values are returned when user GETs their own content
         """
@@ -85,7 +98,7 @@ class ContentTests(APITestCase):
                 self.assertEqual(content["value"], "trinity@theResistance.com")
 
 
-    def test_request_content_as_other(self):
+    def test_get_content_as_other_expect_restriced_unless_public(self):
         """
         Verify that the correct values are returned when user GETs another user's content
         """
@@ -105,6 +118,43 @@ class ContentTests(APITestCase):
                 self.assertEqual(content["value"], "restricted value")
             if content["field_type"]["name"] == "email":
                 self.assertEqual(content["value"], "restricted value")
+
+    def test_get_content_as_unapproved_other_expect_restricted(self):
+        """
+        When a user has an UNapproved content_view_request, they should NOT
+        be able to access content that isn't public
+        """
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
+        url = "/content/2"
+        response = client.get(url, format='json')
+        json_response = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json_response["value"], "restricted value")
+
+    def test_get_content_as_approved_other_expect_unrestricted(self):
+        """
+        When a user has an approved content_view_request, they should 
+        be able to access content that isn't public
+        """
+        client = APIClient()
+        # Approve smith's request to view trinity's content
+        url = F"/contentViewRequest/{self.agentSmithRequestForTrinityInfo}"
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.trinityToken)
+        data = {
+           "is_approved": True
+        }
+        response = client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # authenticate as smith, and read the phone number MUAHH HA HA!
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
+        url = "/content/2"
+        response = client.get(url, format='json')
+        json_response = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json_response["value"], "1234567890")
+
         
 
 # TODO Add tests for retrieving a specific piece of content by id

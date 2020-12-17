@@ -111,7 +111,36 @@ class ContentTests(APITestCase):
         When a user has an approved content_view_request, they should 
         be able to access content that isn't public
         """
-        
+        client = APIClient()
+
+        # Post a request to view trinity's content as smith
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.agentSmithToken)
+        data = {
+           "content": 2
+        }
+        url = "/contentViewRequest"
+        response = client.post(url, data, format='json')
+        json_response = json.loads(response.content)
+        self.agentSmithRequestForTrinityInfo = json_response["id"]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Approve smith's request as trinity
+        url = F"/contentViewRequest/{self.agentSmithRequestForTrinityInfo}"
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.trinityToken)
+        data = {
+           "is_approved": True
+        }
+        response = client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        url = "/content/2"
+        response = client.get(url, format='json')
+        json_response = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(json_response["value"], "1234567890")
+
+
+
         
 
 # TODO Add tests for retrieving a specific piece of content by id

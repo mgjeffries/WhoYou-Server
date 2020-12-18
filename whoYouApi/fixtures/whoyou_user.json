@@ -5,8 +5,7 @@
         "fields": {
             "profile_image_path": "",
             "cover_image_path": "",
-            "user": 1,
-            "full_name": "Neo"
+            "user": 1
         }
     },
     {
@@ -15,8 +14,7 @@
         "fields": {
             "profile_image_path": "",
             "cover_image_path": "",
-            "user": 2,
-            "full_name": "Agent Smith"
+            "user": 2
         }
     }
 ]

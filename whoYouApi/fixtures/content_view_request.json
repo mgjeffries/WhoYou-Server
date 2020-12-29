@@ -1,0 +1,32 @@
+[
+    {
+        "model": "whoYouApi.ContentViewRequest",
+        "pk": 1,
+        "fields": {
+            "requester": 2,
+            "content": 3,
+            "is_approved": false,
+            "creation_time": "2020-12-29T20:12:57.346384Z"
+        }
+    },
+    {
+        "model": "whoYouApi.ContentViewRequest",
+        "pk": 2,
+        "fields": {
+            "requester": 1,
+            "content": 8,
+            "is_approved": false,
+            "creation_time": "2020-12-29T20:12:57.346384Z"
+        }
+    },
+    {
+        "model": "whoYouApi.ContentViewRequest",
+        "pk": 3,
+        "fields": {
+            "requester": 1,
+            "content": 9,
+            "is_approved": true,
+            "creation_time": "2020-12-29T20:12:57.346384Z"
+        }
+    }
+]

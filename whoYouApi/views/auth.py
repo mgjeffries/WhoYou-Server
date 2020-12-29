@@ -32,6 +32,7 @@ def login_user(request):
             whoyou_user = WhoYouUser.objects.get(user=authenticated_user)
             data = json.dumps(
                 {"valid": True,
+                "user_id": whoyou_user.id,
                 "token": token.key })
             return HttpResponse(data, content_type='application/json')
 
@@ -110,6 +111,7 @@ def register_user(request):
         data = json.dumps(
             {
                 "token": token.key,
+                "user_id": whoyou_user.id,
                 "id": whoyou_user.id
             })
         return HttpResponse(data, content_type='application/json')

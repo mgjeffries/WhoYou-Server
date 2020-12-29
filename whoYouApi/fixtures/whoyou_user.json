@@ -16,5 +16,14 @@
             "cover_image_path": "",
             "user": 2
         }
+    },
+    {
+        "model": "whoYouApi.WhoYouUser",
+        "pk": 3,
+        "fields": {
+            "profile_image_path": "",
+            "cover_image_path": "",
+            "user": 3
+        }
     }
 ]

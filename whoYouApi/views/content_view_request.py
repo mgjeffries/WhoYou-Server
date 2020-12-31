@@ -108,11 +108,20 @@ class ContentSerializerNoValue(serializers.ModelSerializer):
         model = Content
         # Content Value is NOT included to prevent exposing data
         fields = ('id',)
+        
+class WhoYouUserSerializer(serializers.ModelSerializer):
+    """Serializer for WhoYouUsers""" 
+
+    class Meta:
+        model = WhoYouUser
+        fields = ( 'id', 'profile_image_path', 'cover_image_path', 'name')
+        depth = 1
 
 class ContentViewRequestSerializer(serializers.ModelSerializer):
     """Serializer for Content_View_Requests"""
     # A custom serializer is used to prevent exposing the content value
     content = ContentSerializerNoValue(many=False)
+    requester = WhoYouUserSerializer(many=False)
 
     class Meta:
         model = ContentViewRequest

@@ -100,7 +100,7 @@ class ContentViewRequestViewSet(ViewSet):
             else:
                 return Response({"message": "Permission denied"}, status=status.HTTP_401_UNAUTHORIZED)
                 
-        except contentViewRequest.DoesNotExist as ex:
+        except ContentViewRequest.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 class ContentSerializerNoValue(serializers.ModelSerializer):
     """ Serializer for Content that """

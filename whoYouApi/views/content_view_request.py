@@ -107,7 +107,8 @@ class ContentSerializerNoValue(serializers.ModelSerializer):
     class Meta:
         model = Content
         # Content Value is NOT included to prevent exposing data
-        fields = ('id',)
+        fields = ('id', 'field_type')
+        depth = 2
         
 class WhoYouUserSerializer(serializers.ModelSerializer):
     """Serializer for WhoYouUsers""" 

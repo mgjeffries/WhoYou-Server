@@ -23,7 +23,7 @@ class ContentViewSet(ViewSet):
         field_type = FieldType.objects.get(pk=request.data["field_type"])
         content.field_type = field_type
         content.value = request.data["value"]
-        content.is_public = request.data["is_public"] == "true"
+        content.is_public = request.data["is_public"]
         content.verification_time = timezone.now()
 
         serializer = ContentSerializer(content, context={'request': request})
@@ -86,7 +86,7 @@ class ContentViewSet(ViewSet):
         field_type = FieldType.objects.get(pk=request.data["field_type"])
         content.field_type = field_type
         content.value = request.data["value"]
-        content.is_public = request.data["is_public"] == "true"
+        content.is_public = request.data["is_public"]
         content.verification_time = timezone.now()
 
         content.save()

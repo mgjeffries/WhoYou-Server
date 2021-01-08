@@ -17,6 +17,10 @@ Python 3.8
 1. Setup the database from the fixtures by running the seed file `sh seed.sh`
 1. Run the server `python manage.py runserver`
 
+## Test the Code
+Integrations tests are the best! Run them before you create a pr. Run them before you deploy! Run them when you wake up, or go to bed, or whenever you want! 
+
+1. run `python manage.py test tests -v 1`
 ## Deploying changes to the "production server" 
 
 1. If new packages have been installed in the pipenv, run `pipenv lock -r > requirements.txt` to save these dependencies to the virtual environment

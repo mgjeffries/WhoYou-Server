@@ -19,6 +19,15 @@ class WhoYouUserViewSet(ViewSet):
         """
         users = WhoYouUser.objects.all()
 
+        # Filter content based on query parameters
+        # e.g.: /user?name="fred"
+        search_Name = self.request.query_params.get('name', None)
+        if search_Name is not None:
+            # TODO: Implement a search that uses the django orm instead of iterating over
+            # the list of users
+            users  = (user for user in users if search_Name.lower() in user.name.lower())
+
+
         serializer = WhoYouUserSerializer(
             users, many=True, context={'request': request}
         )

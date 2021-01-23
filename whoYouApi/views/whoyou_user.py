@@ -6,8 +6,9 @@ from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework import status
-
-
+import uuid
+from django.core.files.base import ContentFile
+import base64
 class WhoYouUserViewSet(ViewSet):
     """ WhoYou User """
 
@@ -55,7 +56,11 @@ class WhoYouUserViewSet(ViewSet):
             return Response({"message": "Permission denied"}, status=status.HTTP_401_UNAUTHORIZED)
 
         if "profile_image_path" in request.data:
-            user_to_update.profile_image_path = request.data["profile_image_path"]
+            format, imgstr = request.data["profile_image_path"].split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'{pk}-{uuid.uuid4()}.{ext}')
+            user_to_update.profile_image_path = data
+
         if "cover_image_path" in request.data:
             user_to_update.cover_image_path = request.data["cover_image_path"]
 

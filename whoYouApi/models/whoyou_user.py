@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class WhoYouUser(models.Model):
     """Database whoYou user Model"""
-    profile_image_path = models.CharField(max_length=100)
+    profile_image_path = models.ImageField(upload_to='profileImage', height_field=None, width_field=None, null=True, max_length=None)
     cover_image_path = models.CharField(max_length=100)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
